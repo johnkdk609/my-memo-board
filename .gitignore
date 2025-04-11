@@ -24,8 +24,8 @@ hs_err_pid*
 replay_pid*
 
 # Build output
-/build/
-/.gradle/
+**/build/
+.gradle/
 target/
 
 # IntelliJ IDEA
@@ -38,3 +38,9 @@ target/
 # OS-specific
 .DS_Store
 Thumbs.db
+
+# Spring Boot
+HELP.md
+
+# Local environment files
+.env
