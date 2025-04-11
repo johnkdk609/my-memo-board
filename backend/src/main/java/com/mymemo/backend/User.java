@@ -11,14 +11,19 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
     private String nickname;
 
-    private String email;
+    @Column(nullable = false, unique = true)
+    private String email;   // 이메일은 로그인 및 식별의 기준이 되므로 고유해야 함
 
+    @Column(nullable = false)
     private LocalDate birthDate;
 
+    @Column(nullable = false)
     private LocalDate createdAt;
 
     protected User() {}
@@ -47,6 +52,7 @@ public class User {
 
     public void changeBirthDate(LocalDate birthDate) {
         if (birthDate == null) {
+            // 생일은 회원가입 이후 변경 가능하지만, null로 바꾸는 것은 금지
             throw new IllegalArgumentException("생년월일은 null일 수 없습니다.");
         }
         this.birthDate = birthDate;
