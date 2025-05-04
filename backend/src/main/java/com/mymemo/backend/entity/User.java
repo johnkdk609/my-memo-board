@@ -1,4 +1,4 @@
-package com.mymemo.backend;
+package com.mymemo.backend.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;

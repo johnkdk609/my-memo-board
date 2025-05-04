@@ -1,6 +1,6 @@
 package com.mymemo.backend.repository;
 
-import com.mymemo.backend.User;
+import com.mymemo.backend.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
