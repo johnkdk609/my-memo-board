@@ -44,3 +44,7 @@ HELP.md
 
 # Local environment files
 .env
+
+# Spring profile-specific config
+backend/src/main/resources/application-prod.yml
+backend/src/main/resources/application-dev.yml
