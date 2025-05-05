@@ -2,6 +2,7 @@ package com.mymemo.backend.auth.service;
 
 import com.mymemo.backend.auth.dto.SignupRequestDto;
 import com.mymemo.backend.entity.User;
+import com.mymemo.backend.global.exception.CustomException;
 import com.mymemo.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,12 +18,12 @@ public class AuthService {
     public void signup(SignupRequestDto dto) {
         // 1. 이메일 중복 체크
         if (userRepository.existsByEmail(dto.getEmail())) {
-            throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
+            throw new CustomException("이미 사용 중인 이메일입니다.", 400);
         }
 
         // 2. 비밀번호 확인 일치 여부
         if (!dto.getPassword().equals(dto.getPasswordCheck())) {
-            throw new IllegalArgumentException("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+            throw new CustomException("비밀번호와 비밀번호 확인이 일치하지 않습니다.", 400);
         }
 
         // 비밀번호 암호화
