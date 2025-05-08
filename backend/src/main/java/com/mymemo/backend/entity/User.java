@@ -66,6 +66,8 @@ public class User {
         return email;
     }
 
+    public String getPassword() { return password; }
+
     public Long getId() {
         return id;
     }
