@@ -2,6 +2,7 @@ package com.mymemo.backend.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
@@ -24,16 +25,20 @@ public class User {
     private LocalDate birthDate;
 
     @Column(nullable = false)
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
     protected User() {}
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 
     public User(String password, String nickname, String email, LocalDate birthDate) {
         this.password = password;
         this.nickname = nickname;
         this.email = email;
         this.birthDate = birthDate;
-        this.createdAt = LocalDate.now();
     }
 
     public void changePassword(String password) {
@@ -72,7 +77,8 @@ public class User {
         return id;
     }
 
-    public LocalDate getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
+
 }
