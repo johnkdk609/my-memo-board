@@ -40,8 +40,6 @@ JWT 기반 인증을 통해 사용자별로 메모를 안전하게 구분하고,
 
 </details>
 
-<br>
-
 <details>
 <summary>로그인 플로우</summary>
 
@@ -49,8 +47,6 @@ JWT 기반 인증을 통해 사용자별로 메모를 안전하게 구분하고,
 ※ Whimsical에서 제작
 
 </details>
-
-<br>
 
 <details>
 <summary>메모 생성 플로우</summary>
