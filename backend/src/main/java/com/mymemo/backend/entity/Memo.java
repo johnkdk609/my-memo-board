@@ -1,9 +1,9 @@
 package com.mymemo.backend.entity;
 
+import com.mymemo.backend.entity.enums.MemoCategory;
 import com.mymemo.backend.entity.enums.Visibility;
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -35,11 +35,12 @@ public class Memo {
     @Column(nullable = false, length = 10)
     private Visibility visibility;
 
-    @Column(nullable = false, length=50)
-    private String category;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 10)
+    private MemoCategory memoCategory;
 
     @Column(nullable = false)
-    private int pinOrder;   // 상단 고정 순서, 기본 0
+    private int pinOrder = 0;   // 상단 고정 순서, 기본 0
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
