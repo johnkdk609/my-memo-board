@@ -27,7 +27,7 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    protected User() {}
+    protected User() {}     // protected를 하여 JPA는 호출 가능, 외부 코드에서는 직접 호출 제한됨 (불필요한 객체 생성 가능성 방지)
 
     @PrePersist
     protected void onCreate() {
