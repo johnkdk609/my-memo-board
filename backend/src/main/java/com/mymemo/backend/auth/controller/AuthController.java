@@ -7,6 +7,7 @@ import com.mymemo.backend.auth.service.AuthService;
 import com.mymemo.backend.auth.util.JwtUtil;
 import com.mymemo.backend.entity.User;
 import com.mymemo.backend.global.exception.CustomException;
+import com.mymemo.backend.global.exception.ErrorCode;
 import com.mymemo.backend.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -49,22 +50,24 @@ public class AuthController {
      */
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto request) {
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElse(null);      // 이메일 존재 여부 확인
+        User user;
 
-        // 유효하지 않은 경우 (이메일 없음 or 비밀번호 불일치)
-        if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            String message;
+        if ("dev".equals(activeProfile)) {
+            // 1. 이메일 존재 확인 -> 없으면 바로 예외
+            user = userRepository.findByEmail(request.getEmail())
+                    .orElseThrow(() -> new CustomException(ErrorCode.EMAIL_NOT_FOUND));
 
-            // dev 프로필이면 상세 메시지 제공하고, prod는 통합된 보안 메시지 제공한다.
-            if ("dev".equals(activeProfile)) {
-                message = user == null ? "존재하지 않는 이메일 주소입니다." : "비밀번호가 일치하지 않습니다.";
-            } else {
-                message = "이메일 또는 비밀번호가 일치하지 않습니다.";
+            // 2. 비밀번호 불일치 -> 예외
+            if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+                throw new CustomException(ErrorCode.PASSWORD_MISMATCH);
             }
+        } else {
+            // prod 환경: 통합 메시지용 처리
+            user = userRepository.findByEmail(request.getEmail()).orElse(null);
 
-            // 예외 발생 시 GlobalExceptionHandler가 JSON 형태로 응답 처리
-            throw new CustomException(message, 400);
+            if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+                throw new CustomException(ErrorCode.INVALID_CREDENTIALS);
+            }
         }
 
         // 인증 성공 시 JWT 발급

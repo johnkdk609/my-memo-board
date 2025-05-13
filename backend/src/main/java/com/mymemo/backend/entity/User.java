@@ -1,5 +1,7 @@
 package com.mymemo.backend.entity;
 
+import com.mymemo.backend.global.exception.CustomException;
+import com.mymemo.backend.global.exception.ErrorCode;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -43,14 +45,14 @@ public class User {
 
     public void changePassword(String password) {
         if (password == null || password.isBlank()) {
-            throw new IllegalArgumentException("비밀번호는 비어있을 수 없습니다.");
+            throw new CustomException(ErrorCode.MISSING_PASSWORD);
         }
         this.password = password;
     }
 
     public void changeNickname(String nickname) {
         if (nickname == null || nickname.isBlank()) {
-            throw new IllegalArgumentException("닉네임은 비어있을 수 없습니다.");
+            throw new CustomException(ErrorCode.MISSING_NICKNAME);
         }
         this.nickname = nickname;
     }
@@ -58,7 +60,7 @@ public class User {
     public void changeBirthDate(LocalDate birthDate) {
         if (birthDate == null) {
             // 생일은 회원가입 이후 변경 가능하지만, null로 바꾸는 것은 금지
-            throw new IllegalArgumentException("생년월일은 null일 수 없습니다.");
+            throw new CustomException(ErrorCode.MISSING_BIRTHDATE);
         }
         this.birthDate = birthDate;
     }

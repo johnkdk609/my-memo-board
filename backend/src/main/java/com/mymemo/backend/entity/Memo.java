@@ -3,6 +3,7 @@ package com.mymemo.backend.entity;
 import com.mymemo.backend.entity.enums.MemoCategory;
 import com.mymemo.backend.entity.enums.Visibility;
 import com.mymemo.backend.global.exception.CustomException;
+import com.mymemo.backend.global.exception.ErrorCode;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -59,12 +60,12 @@ public class Memo {
 
     public Memo(User user, String title, String content, MemoCategory memoCategory) {
         if (user == null) {
-            throw new CustomException("작성자는 필수입니다.", 400);
+            throw new CustomException(ErrorCode.UNAUTHORIZED_ACCESS);
         }
         this.user = user;
 
         if ((title == null || title.isBlank()) && (content == null || content.isBlank())) {
-            throw new CustomException("아무 것도 작성하지 않으셨습니다.", 400);
+            throw new CustomException(ErrorCode.EMPTY_MEMO);
         }
 
         if (title == null || title.isBlank()) {

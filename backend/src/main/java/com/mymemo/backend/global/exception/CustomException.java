@@ -1,14 +1,18 @@
 package com.mymemo.backend.global.exception;
 
 public class CustomException extends RuntimeException {
-    private final int status;
+    private final ErrorCode errorCode;
 
-    public CustomException(String message, int status) {
-        super(message);
-        this.status = status;
+    public CustomException(ErrorCode errorCode) {
+        super(errorCode.getMessage());
+        this.errorCode = errorCode;
+    }
+
+    public ErrorCode getErrorCode() {
+        return errorCode;
     }
 
     public int getStatus() {
-        return status;
+        return errorCode.getStatus().value();
     }
 }
