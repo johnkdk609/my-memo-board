@@ -38,7 +38,7 @@ public class Memo {
     private Visibility visibility;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 10)
+    @Column(name = "category", nullable = false, length = 10)
     private MemoCategory memoCategory;
 
     @Column(nullable = false)
@@ -58,7 +58,7 @@ public class Memo {
         this.updatedAt = this.createdAt;
     }
 
-    public Memo(User user, String title, String content, MemoCategory memoCategory) {
+    public Memo(User user, String title, String content, MemoCategory memoCategory, Visibility visibility, boolean isPinned, boolean isDeleted, int pinOrder) {
         if (user == null) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_ACCESS);
         }
@@ -81,14 +81,20 @@ public class Memo {
             this.memoCategory = memoCategory;
         }
 
-        this.isPinned = false;
-        this.isDeleted = false;
-        this.visibility = Visibility.PUBLIC;
-        this.pinOrder = 0;
+        if (visibility == null) {
+            this.visibility = Visibility.PUBLIC;
+        } else {
+            this.visibility = visibility;
+        }
+
+        this.isPinned = isPinned;
+        this.isDeleted = isDeleted;
+        this.pinOrder = pinOrder;
     }
 
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
+
 }
