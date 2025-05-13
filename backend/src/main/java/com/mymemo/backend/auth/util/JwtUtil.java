@@ -4,16 +4,18 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
 
+@Slf4j
 @Component
 public class JwtUtil {
 
-    private final Key key;      // JWT 서명을 위한 암호화 키
+    private final Key key;    // JWT 서명을 위한 암호화 키
     private final long expirationMs;    // JWT 만료 시간 (밀리초 단위, yml에서 주입 받음)
 
     // 생성자에서 secret 키와 만료시간을 yml로부터 주입받아 초기화
@@ -21,6 +23,11 @@ public class JwtUtil {
             @Value("${jwt.secret}") String secret,
             @Value("${jwt.access-token-validity-in-ms}") long expirationMs
     ) {
+        // 시크릿 키 최소 길이 검증 (HMAC-SHA256은 256비트 이상 권장)
+        if (secret.getBytes().length < 32) {
+            throw new IllegalArgumentException("JWT Secret key must be at least 256 bits (32 characters) long.");
+        }
+
         this.key = Keys.hmacShaKeyFor(secret.getBytes());       // HS256에 맞는 Key 객체 생성
         this.expirationMs = expirationMs;
     }
@@ -28,7 +35,10 @@ public class JwtUtil {
     // 액세스 토큰 생성: 이메일(subject) 포함, 현재 시간 발급, 만료 시각 설정
     public String createAccessToken(String email) {
         Date now = new Date();  // 현재 시간 생성
+        Date expiry = new Date(now.getTime() + expirationMs);
+
         return Jwts.builder()
+                .setHeaderParam("typ", "JWT")                    // typ 명시 (선택적이지만 권장됨)
                 .setSubject(email)                                          // JWT의 subject 필드에 email 저장
                 .setIssuedAt(now)                                           // 발급 시간
                 .setExpiration(new Date(now.getTime() + expirationMs))      // 만료 시간
@@ -56,6 +66,7 @@ public class JwtUtil {
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             // 서명이 틀리거나, 만료됐거나, 형식이 이상하면 false 반환
+            log.warn("JWT 유효성 검사 실패: {} - {}", e.getClass().getSimpleName(), e.getMessage());
             return false;
         }
     }

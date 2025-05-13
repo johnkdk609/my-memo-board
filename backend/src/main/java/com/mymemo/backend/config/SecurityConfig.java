@@ -28,6 +28,12 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    // JwtAuthenticationFilter는 공통이므로 따로 @Bean 등록
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter(jwtUtil);
+    }
+
     @Bean
     @Profile("dev")
     public SecurityFilterChain devSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -44,7 +50,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()   // 그 외는 인증 필요
                 )
                 .formLogin(form -> form.disable())
-                .addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
