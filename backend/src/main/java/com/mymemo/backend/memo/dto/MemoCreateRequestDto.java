@@ -1,5 +1,6 @@
 package com.mymemo.backend.memo.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mymemo.backend.entity.Memo;
 import com.mymemo.backend.entity.User;
 import com.mymemo.backend.entity.enums.MemoCategory;
@@ -20,8 +21,9 @@ public class MemoCreateRequestDto {
     @Schema(description = "공개 여부", defaultValue = "PUBLIC")
     private Visibility visibility;
 
-    @Schema(description = "상단 고정 여부", defaultValue = "false")
-    private boolean isPinned;
+    @Schema(description = "상단 고정 여부", defaultValue = "false", example = "false")
+    @JsonProperty("pinned")
+    private boolean isPinned = false;
 
     public MemoCreateRequestDto() {}    // @RequestBody 바인딩 시 Jackson이 사용 (필수)
 
