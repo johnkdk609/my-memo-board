@@ -16,7 +16,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Collections;
 
-@Slf4j
+@Slf4j      // 운영 환경에서도 문제 추적 가능하도록 도입
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;

@@ -58,6 +58,8 @@ public class Memo {
         this.updatedAt = this.createdAt;
     }
 
+    // 기존 생성자에 누락된 필드들 추가
+    // -> visibility, isPinned, isDeleted, pinOrder 를 인자로 받아 초기화
     public Memo(User user, String title, String content, MemoCategory memoCategory, Visibility visibility, boolean isPinned, boolean isDeleted, int pinOrder) {
         if (user == null) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_ACCESS);
