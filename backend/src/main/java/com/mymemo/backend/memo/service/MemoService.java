@@ -1,10 +1,12 @@
 package com.mymemo.backend.memo.service;
 
+import com.mymemo.backend.entity.Memo;
 import com.mymemo.backend.entity.User;
 import com.mymemo.backend.global.exception.CustomException;
 import com.mymemo.backend.global.exception.ErrorCode;
 import com.mymemo.backend.global.util.SecurityUtil;
 import com.mymemo.backend.memo.dto.MemoCreateRequestDto;
+import com.mymemo.backend.memo.dto.MemoResponseDto;
 import com.mymemo.backend.repository.MemoRepository;
 import com.mymemo.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,15 +21,14 @@ public class MemoService {
     private final MemoRepository memoRepository;
 
     @Transactional
-    public void createMemo(MemoCreateRequestDto dto) {
+    public MemoResponseDto createMemo(MemoCreateRequestDto dto) {
 
         String email = SecurityUtil.getCurrentUserEmail();
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.EMAIL_NOT_FOUND));
 
-        // 기존: Memo 생성자 직접 호출
-        // 수정: DTO의 toEntity(user) 활용으로 책임 위임 및 간결화
-        memoRepository.save(dto.toEntity(user));
+        Memo memo = memoRepository.save(dto.toEntity(user));
+        return new MemoResponseDto(memo);
     }
 }
