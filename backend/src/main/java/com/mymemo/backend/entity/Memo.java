@@ -5,9 +5,11 @@ import com.mymemo.backend.entity.enums.Visibility;
 import com.mymemo.backend.global.exception.CustomException;
 import com.mymemo.backend.global.exception.ErrorCode;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+@Getter
 @Entity
 @Table(name = "memo")
 public class Memo {

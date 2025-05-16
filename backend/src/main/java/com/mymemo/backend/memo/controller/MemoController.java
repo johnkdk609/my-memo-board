@@ -1,6 +1,7 @@
 package com.mymemo.backend.memo.controller;
 
 import com.mymemo.backend.memo.dto.MemoCreateRequestDto;
+import com.mymemo.backend.memo.dto.MemoResponseDto;
 import com.mymemo.backend.memo.service.MemoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +23,9 @@ public class MemoController {
      * @return 메모 생성 성공 메시지
      */
     @PostMapping
-    public ResponseEntity<?> createMemo(@RequestBody MemoCreateRequestDto requestDto) {
-        memoService.createMemo(requestDto);     // 메모 생성 로직 위임
-        return ResponseEntity.ok("메모 생성 성공");
+    public ResponseEntity<MemoResponseDto> createMemo(@RequestBody MemoCreateRequestDto requestDto) {
+        MemoResponseDto responseDto = memoService.createMemo(requestDto);
+        return ResponseEntity.ok(responseDto);
     }
 
 }
