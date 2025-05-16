@@ -21,8 +21,8 @@ public class MemoCreateRequestDto {
     @Schema(description = "공개 여부", defaultValue = "PUBLIC")
     private Visibility visibility;
 
-    @Schema(description = "상단 고정 여부", defaultValue = "false", example = "false")
-    @JsonProperty("pinned")
+    @Schema(description = "상단 고정 여부", defaultValue = "false", example = "false")    // Swagger 예시가 isPinned 대신 pinned 로 출력되도록 매핑 처리
+    @JsonProperty("pinned")     // JSON 프로퍼티 이름을 pinned 로 설정해 직관성 확보
     private boolean isPinned = false;
 
     public MemoCreateRequestDto() {}    // @RequestBody 바인딩 시 Jackson이 사용 (필수)
@@ -65,6 +65,7 @@ public class MemoCreateRequestDto {
         this.isPinned = pinned;
     }
 
+    // SRP(단일 책임 원칙) 준수 및 서비스 코드 간결화
     // 엔터티 생성 메서드. DTO -> Entity 변환 책임 (중심 로직)
     public Memo toEntity(User user) {
 

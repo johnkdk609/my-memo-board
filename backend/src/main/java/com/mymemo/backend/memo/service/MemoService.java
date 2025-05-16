@@ -26,6 +26,8 @@ public class MemoService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.EMAIL_NOT_FOUND));
 
+        // 기존: Memo 생성자 직접 호출
+        // 수정: DTO의 toEntity(user) 활용으로 책임 위임 및 간결화
         memoRepository.save(dto.toEntity(user));
     }
 }
