@@ -15,7 +15,10 @@ public class MemoCreateRequestDto {
     @Schema(description = "메모 내용")
     private String content;
 
-    @Schema(description = "메모 카테고리")
+    @Schema(description = "메모 카테고리",
+            allowableValues = {"WORK", "HOBBY", "PERSONAL", "URGENT", "STUDY", "IDEA", "ETC"},
+            defaultValue = "ETC",
+            example = "ETC")
     private MemoCategory memoCategory;
 
     @Schema(description = "공개 여부", defaultValue = "PUBLIC")
