@@ -21,10 +21,10 @@ public class MemoCreateRequestDto {
             example = "ETC")
     private MemoCategory memoCategory;
 
-    @Schema(description = "공개 여부", defaultValue = "PUBLIC")
+    @Schema(description = "공개 여부", defaultValue = "PUBLIC", hidden = true)
     private Visibility visibility;
 
-    @Schema(description = "상단 고정 여부", defaultValue = "false", example = "false")    // Swagger 예시가 isPinned 대신 pinned 로 출력되도록 매핑 처리
+    @Schema(description = "상단 고정 여부", defaultValue = "false", example = "false", hidden = true)    // Swagger 예시가 isPinned 대신 pinned 로 출력되도록 매핑 처리
     @JsonProperty("pinned")     // JSON 프로퍼티 이름을 pinned 로 설정해 직관성 확보
     private boolean isPinned = false;
 
