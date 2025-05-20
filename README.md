@@ -38,6 +38,7 @@ JWT 기반 인증을 통해 사용자별로 메모를 안전하게 구분하고,
 ![회원가입 플로우](./docs/signup-flow.png)
 ※ Whimsical에서 제작
 
+> 사용자는 이메일 인증을 통해 본인 확인을 한 후, 비밀번호 조건 검증과 입력값 유효성 검사 과정을 거쳐 회원가입을 완료합니다.
 </details>
 
 <details>
@@ -46,6 +47,7 @@ JWT 기반 인증을 통해 사용자별로 메모를 안전하게 구분하고,
 ![로그인 플로우](./docs/login-flow.png)
 ※ Whimsical에서 제작
 
+> 사용자가 이메일과 비밀번호를 입력하면 서버는 DB에 등록된 사용자 정보를 확인하고, 인증에 성공할 경우 JWT 토큰을 발급하여 로그인 처리를 완료합니다.
 </details>
 
 <details>
@@ -54,4 +56,14 @@ JWT 기반 인증을 통해 사용자별로 메모를 안전하게 구분하고,
 ![메모 생성 플로우](./docs/memo-create-flow.png)
 ※ Whimsical에서 제작
 
+> 사용자가 메모 작성 화면에서 제목, 내용, 카테고리를 입력하고 저장하면, 유효성 검사를 거쳐 해당 메모가 DB에 저장됩니다.
+</details>
+
+<details>
+<summary>메모 조회 플로우</summary>
+
+![메모 조회 플로우](./docs/memo-list-flowchart.png)
+※ Whimsical에서 제작
+
+> 사용자가 메인 페이지에 진입하면, 서버는 JWT 인증을 통해 사용자 식별 후 전체 메모 목록을 JSON 형태로 응답합니다.
 </details>
