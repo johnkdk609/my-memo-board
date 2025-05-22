@@ -1,7 +1,7 @@
 package com.mymemo.backend.memo.controller;
 
 import com.mymemo.backend.memo.dto.MemoCreateRequestDto;
-import com.mymemo.backend.memo.dto.MemoResponseDto;
+import com.mymemo.backend.memo.dto.MemoCreateResponseDto;
 import com.mymemo.backend.memo.service.MemoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +23,8 @@ public class MemoController {
      * @return 메모 생성 성공 메시지
      */
     @PostMapping
-    public ResponseEntity<MemoResponseDto> createMemo(@RequestBody MemoCreateRequestDto requestDto) {
-        MemoResponseDto responseDto = memoService.createMemo(requestDto);
+    public ResponseEntity<MemoCreateResponseDto> createMemo(@RequestBody MemoCreateRequestDto requestDto) {
+        MemoCreateResponseDto responseDto = memoService.createMemo(requestDto);
         return ResponseEntity.ok(responseDto);
     }
 
