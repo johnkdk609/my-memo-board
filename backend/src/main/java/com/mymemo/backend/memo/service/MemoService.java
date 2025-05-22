@@ -6,7 +6,7 @@ import com.mymemo.backend.global.exception.CustomException;
 import com.mymemo.backend.global.exception.ErrorCode;
 import com.mymemo.backend.global.util.SecurityUtil;
 import com.mymemo.backend.memo.dto.MemoCreateRequestDto;
-import com.mymemo.backend.memo.dto.MemoResponseDto;
+import com.mymemo.backend.memo.dto.MemoCreateResponseDto;
 import com.mymemo.backend.repository.MemoRepository;
 import com.mymemo.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ public class MemoService {
     private final MemoRepository memoRepository;
 
     @Transactional
-    public MemoResponseDto createMemo(MemoCreateRequestDto dto) {
+    public MemoCreateResponseDto createMemo(MemoCreateRequestDto dto) {
 
         String email = SecurityUtil.getCurrentUserEmail();
 
@@ -29,6 +29,8 @@ public class MemoService {
                 .orElseThrow(() -> new CustomException(ErrorCode.EMAIL_NOT_FOUND));
 
         Memo memo = memoRepository.save(dto.toEntity(user));
-        return new MemoResponseDto(memo);
+        return new MemoCreateResponseDto(memo);
     }
+
+    public List<Memo>
 }
