@@ -1,7 +1,10 @@
 package com.mymemo.backend.repository;
 
 import com.mymemo.backend.entity.Memo;
+import com.mymemo.backend.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
 
 public interface MemoRepository extends JpaRepository<Memo, Long> {
 
@@ -15,4 +18,6 @@ public interface MemoRepository extends JpaRepository<Memo, Long> {
      * count()              메모 개수 조회
      * existsById(Long id)  메모 존재 여부 확인
      */
+
+    List<Memo> findAllByUserAndIsDeletedFalseOrderByUpdatedAtDesc(User user);
 }
