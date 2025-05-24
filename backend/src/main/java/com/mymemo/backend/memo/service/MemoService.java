@@ -36,7 +36,10 @@ public class MemoService {
         return new MemoCreateResponseDto(memo);
     }
 
-    public List<MemoListResponseDto> getAllMemos(User user) {
+    public List<MemoListResponseDto> getAllMemos(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
         List<Memo> memos = memoRepository.findAllByUserAndIsDeletedFalseOrderByUpdatedAtDesc(user);
         List<MemoListResponseDto> responseList = new ArrayList<>();
 

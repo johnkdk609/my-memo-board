@@ -14,6 +14,7 @@ public enum ErrorCode {
     INVALID_CREDENTIALS("이메일 또는 비밀번호가 올바르지 않습니다.", HttpStatus.BAD_REQUEST),
     UNAUTHORIZED_ACCESS("작성자는 필수입니다.", HttpStatus.UNAUTHORIZED),
     EMPTY_MEMO("아무 것도 작성하지 않으셨습니다.", HttpStatus.BAD_REQUEST),
+    USER_NOT_FOUND("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND)
     // 필요한 항목 계속 추가 가능
     ;
 
