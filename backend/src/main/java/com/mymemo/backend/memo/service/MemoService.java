@@ -8,9 +8,12 @@ import com.mymemo.backend.global.util.SecurityUtil;
 import com.mymemo.backend.memo.dto.MemoCreateRequestDto;
 import com.mymemo.backend.memo.dto.MemoCreateResponseDto;
 import com.mymemo.backend.memo.dto.MemoListResponseDto;
+import com.mymemo.backend.memo.dto.PageResponseDto;
 import com.mymemo.backend.repository.MemoRepository;
 import com.mymemo.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,17 +39,21 @@ public class MemoService {
         return new MemoCreateResponseDto(memo);
     }
 
-    public List<MemoListResponseDto> getAllMemos(String email) {
+    public PageResponseDto<MemoListResponseDto> getMemos(String email, Pageable pageable) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        List<Memo> memos = memoRepository.findAllByUserAndIsDeletedFalseOrderByUpdatedAtDesc(user);
-        List<MemoListResponseDto> responseList = new ArrayList<>();
+        Page<Memo> memoPage = memoRepository.findByUserAndIsDeletedFalseOrderByUpdatedAtDesc(user, pageable);
 
-        for (Memo memo : memos) {
-            responseList.add(new MemoListResponseDto(memo));
-        }
+        Page<MemoListResponseDto> dtoPage = memoPage.map(MemoListResponseDto::from);
 
-        return responseList;
+        return new PageResponseDto<>(
+                dtoPage.getContent(),
+                dtoPage.getNumber(),
+                dtoPage.getSize(),
+                dtoPage.getTotalElements(),
+                dtoPage.getTotalPages(),
+                dtoPage.isLast()
+        );
     }
 }

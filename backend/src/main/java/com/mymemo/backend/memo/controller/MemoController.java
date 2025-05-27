@@ -5,9 +5,15 @@ import com.mymemo.backend.global.util.SecurityUtil;
 import com.mymemo.backend.memo.dto.MemoCreateRequestDto;
 import com.mymemo.backend.memo.dto.MemoCreateResponseDto;
 import com.mymemo.backend.memo.dto.MemoListResponseDto;
+import com.mymemo.backend.memo.dto.PageResponseDto;
 import com.mymemo.backend.memo.service.MemoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,14 +39,15 @@ public class MemoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<MemoListResponseDto>> getAllMemos() {
-        long start = System.currentTimeMillis();
+    public ResponseEntity<PageResponseDto<MemoListResponseDto>> getMemos(
+            @ParameterObject @PageableDefault(size = 10, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable) {
+//        long start = System.currentTimeMillis();
 
         String email = SecurityUtil.getCurrentUserEmail();
-        List<MemoListResponseDto> response = memoService.getAllMemos(email);
+        PageResponseDto<MemoListResponseDto> response = memoService.getMemos(email, pageable);
 
-        long end = System.currentTimeMillis();
-        log.info("[getAllMemos] 메모 조회 소요 시간: {} ms", (end - start));
+//        long end = System.currentTimeMillis();
+//        log.info("[getAllMemos] 메모 조회 소요 시간: {} ms", (end - start));
 
         return ResponseEntity.ok(response);
     }
