@@ -44,4 +44,8 @@ public class MemoListResponseDto {
         }
         return preview;
     }
+
+    public static MemoListResponseDto from(Memo memo) {
+        return new MemoListResponseDto(memo);
+    }
 }

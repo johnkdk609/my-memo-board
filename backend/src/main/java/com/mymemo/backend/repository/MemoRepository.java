@@ -2,6 +2,8 @@ package com.mymemo.backend.repository;
 
 import com.mymemo.backend.entity.Memo;
 import com.mymemo.backend.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -20,6 +22,8 @@ public interface MemoRepository extends JpaRepository<Memo, Long> {
      */
 
     List<Memo> findAllByUserAndIsDeletedFalseOrderByUpdatedAtDesc(User user);
+
+    Page<Memo> findByUserAndIsDeletedFalseOrderByUpdatedAtDesc(User user, Pageable pageable);
 
     long countByUser(User user);
 }
