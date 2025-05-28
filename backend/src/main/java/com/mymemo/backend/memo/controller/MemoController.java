@@ -38,12 +38,21 @@ public class MemoController {
         return ResponseEntity.ok(responseDto);
     }
 
+    /**
+     * [GET] /api/memos
+     * 페이징 처리된 메모 목록을 조회하는 API
+     * @PageableDefault: 기본 페이지 크기와 정렬 기준 지정 (10개씩, 최신순)
+     * @ParameterObject: Swagger UI에 pageable 파라미터 자동 반영
+     */
     @GetMapping
     public ResponseEntity<PageResponseDto<MemoListResponseDto>> getMemos(
             @ParameterObject @PageableDefault(size = 10, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable) {
 //        long start = System.currentTimeMillis();
 
+        // 현재 로그인된 사용자의 이메일을 가져옴
         String email = SecurityUtil.getCurrentUserEmail();
+
+        // MemoService를 통해 페이징 처리된 메모 목록 응답을 받음
         PageResponseDto<MemoListResponseDto> response = memoService.getMemos(email, pageable);
 
 //        long end = System.currentTimeMillis();

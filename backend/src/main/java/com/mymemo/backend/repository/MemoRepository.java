@@ -23,6 +23,7 @@ public interface MemoRepository extends JpaRepository<Memo, Long> {
 
     List<Memo> findAllByUserAndIsDeletedFalseOrderByUpdatedAtDesc(User user);
 
+    // 사용자별 메모 목록을 페이징 + 최신순 정렬로 조회 (삭제되지 않은 메모만 포함)
     Page<Memo> findByUserAndIsDeletedFalseOrderByUpdatedAtDesc(User user, Pageable pageable);
 
     long countByUser(User user);
