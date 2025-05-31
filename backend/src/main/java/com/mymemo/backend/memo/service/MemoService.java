@@ -39,6 +39,20 @@ public class MemoService {
         return new MemoCreateResponseDto(memo);
     }
 
+    private PageResponseDto<MemoListResponseDto> toPageResponse(Page<Memo> memoPage) {
+        // 엔티티 -> DTO 매핑
+        Page<MemoListResponseDto> dtoPage = memoPage.map(MemoListResponseDto::from);
+        // 커스텀 Page 응답 DTO에 필요한 정보 구성
+        return new PageResponseDto<>(
+                dtoPage.getContent(),       // 현재 페이지의 데이터 리스트
+                dtoPage.getNumber(),        // 현재 페이지 번호
+                dtoPage.getSize(),          // 페이지당 개수
+                dtoPage.getTotalElements(), // 전체 항목 수
+                dtoPage.getTotalPages(),    // 전체 페이지 수
+                dtoPage.isLast()            // 마지막 페이지 여부
+        );
+    }
+
     /**
      * 페이징 처리된 메모 목록을 조회
      * @param email 현재 로그인한 사용자 이메일
@@ -53,17 +67,22 @@ public class MemoService {
         // 삭제되지 않은 메모들을 최신순으로 페이징 조회
         Page<Memo> memoPage = memoRepository.findByUserAndIsDeletedFalseOrderByUpdatedAtDesc(user, pageable);
 
-        // 엔티티 -> DTO 매핑
-        Page<MemoListResponseDto> dtoPage = memoPage.map(MemoListResponseDto::from);
+        return toPageResponse(memoPage);
+    }
 
-        // 커스텀 Page 응답 DTO에 필요한 정보 구성
-        return new PageResponseDto<>(
-                dtoPage.getContent(),       // 현재 페이지의 데이터 리스트
-                dtoPage.getNumber(),        // 현재 페이지 번호
-                dtoPage.getSize(),          // 페이지당 개수
-                dtoPage.getTotalElements(), // 전체 항목 수
-                dtoPage.getTotalPages(),    // 전체 페이지 수
-                dtoPage.isLast()            // 마지막 페이지 여부
-        );
+    /**
+     * 페이징 처리된, 키워드를 제목에서 검색한 메모 목록 조회
+     * @param email 현재 로그인한 사용자 이메일
+     * @param keyword 검색할 키워드 (제목 기준)
+     * @param pageable 페이징 및 정렬 정보를 포함한 객체
+     * @return PageResponseDto<MemoListResponseDto> 응답 DTO로 감싼 페이징 결과
+     */
+    public PageResponseDto<MemoListResponseDto> getKeywordMemo(String email, String keyword, Pageable pageable) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        Page<Memo> memoPage = memoRepository.findByUserAndTitleContainingIgnoreCaseAndIsDeletedFalseOrderByUpdatedAtDesc(user, keyword, pageable);
+
+        return toPageResponse(memoPage);
     }
 }
