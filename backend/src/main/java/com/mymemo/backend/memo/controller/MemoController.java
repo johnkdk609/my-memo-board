@@ -47,7 +47,7 @@ public class MemoController {
     @GetMapping
     public ResponseEntity<PageResponseDto<MemoListResponseDto>> getMemos(
             @ParameterObject @PageableDefault(size = 10, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable) {
-//        long start = System.currentTimeMillis();
+        long start = System.currentTimeMillis();
 
         // 현재 로그인된 사용자의 이메일을 가져옴
         String email = SecurityUtil.getCurrentUserEmail();
@@ -55,8 +55,8 @@ public class MemoController {
         // MemoService를 통해 페이징 처리된 메모 목록 응답을 받음
         PageResponseDto<MemoListResponseDto> response = memoService.getMemos(email, pageable);
 
-//        long end = System.currentTimeMillis();
-//        log.info("[getAllMemos] 메모 조회 소요 시간: {} ms", (end - start));
+        long end = System.currentTimeMillis();
+        log.info("[getAllMemos] 메모 조회 소요 시간: {} ms", (end - start));
 
         return ResponseEntity.ok(response);
     }

@@ -27,4 +27,6 @@ public interface MemoRepository extends JpaRepository<Memo, Long> {
     Page<Memo> findByUserAndIsDeletedFalseOrderByUpdatedAtDesc(User user, Pageable pageable);
 
     long countByUser(User user);
+
+    Page<Memo> findByUserAndTitleContainingIgnoreCaseAndIsDeletedFalseOrderByUpdatedAtDesc(User user, String keyword, Pageable pageable);
 }
