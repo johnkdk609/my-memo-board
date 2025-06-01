@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MemoRepository extends JpaRepository<Memo, Long> {
 
@@ -38,4 +39,6 @@ public interface MemoRepository extends JpaRepository<Memo, Long> {
      * @return 키워드가 포함된 메모 페이지 객체
      */
     Page<Memo> findByUserAndTitleContainingIgnoreCaseAndIsDeletedFalseOrderByUpdatedAtDesc(User user, String keyword, Pageable pageable);
+
+    Optional<Memo> findByIdAndUserAndIsDeletedFalse(Long id, User user);
 }
