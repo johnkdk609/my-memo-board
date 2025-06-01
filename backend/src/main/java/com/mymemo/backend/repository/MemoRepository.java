@@ -21,12 +21,21 @@ public interface MemoRepository extends JpaRepository<Memo, Long> {
      * existsById(Long id)  메모 존재 여부 확인
      */
 
+    // 해당 사용자의 모든 메모를 최신순으로 조회 (삭제되지 않은 메모만 포함, 페이징 없음) - 현재 사용 X
     List<Memo> findAllByUserAndIsDeletedFalseOrderByUpdatedAtDesc(User user);
 
-    // 사용자별 메모 목록을 페이징 + 최신순 정렬로 조회 (삭제되지 않은 메모만 포함)
+    // 해당 사용자의 메모를 페이징 처리하여 최신순으로 조회 (삭제되지 않은 메모만 포함)
     Page<Memo> findByUserAndIsDeletedFalseOrderByUpdatedAtDesc(User user, Pageable pageable);
 
+    // 해당 사용자가 작성한 전체 메모 개수를 반환 (삭제 여부와 무관)
     long countByUser(User user);
 
+    /**
+     * 특정 사용자의 메모 중 삭제되지 않았고, 제목에 키워드가 포함된 메모들을 최신순으로 페이징 조회
+     * @param user 조회 대상 사용자
+     * @param keyword 검색 키워드 (제목 기준, 대소문자 무시)
+     * @param pageable 페이징 및 정렬 정보
+     * @return 키워드가 포함된 메모 페이지 객체
+     */
     Page<Memo> findByUserAndTitleContainingIgnoreCaseAndIsDeletedFalseOrderByUpdatedAtDesc(User user, String keyword, Pageable pageable);
 }
