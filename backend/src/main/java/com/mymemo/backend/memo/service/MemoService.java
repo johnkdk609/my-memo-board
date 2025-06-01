@@ -5,10 +5,7 @@ import com.mymemo.backend.entity.User;
 import com.mymemo.backend.global.exception.CustomException;
 import com.mymemo.backend.global.exception.ErrorCode;
 import com.mymemo.backend.global.util.SecurityUtil;
-import com.mymemo.backend.memo.dto.MemoCreateRequestDto;
-import com.mymemo.backend.memo.dto.MemoCreateResponseDto;
-import com.mymemo.backend.memo.dto.MemoListResponseDto;
-import com.mymemo.backend.memo.dto.PageResponseDto;
+import com.mymemo.backend.memo.dto.*;
 import com.mymemo.backend.repository.MemoRepository;
 import com.mymemo.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -59,11 +56,13 @@ public class MemoService {
 
     /**
      * 페이징 처리된 메모 목록을 조회
-     * @param email 현재 로그인한 사용자 이메일
      * @param pageable 페이징 및 정렬 정보를 포함한 객체
      * @return PageResponseDto<MemoListResponseDto> 응답 DTO로 감싼 페이징 결과
      */
-    public PageResponseDto<MemoListResponseDto> getMemos(String email, Pageable pageable) {
+    public PageResponseDto<MemoListResponseDto> getMemos(Pageable pageable) {
+        // 현재 로그인한 사용자 이메일 확인
+        String email = SecurityUtil.getCurrentUserEmail();
+
         // 사용자 조회 (없는 경우 예외 발생)
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
@@ -76,17 +75,44 @@ public class MemoService {
 
     /**
      * 페이징 처리된, 키워드를 제목에서 검색한 메모 목록 조회
-     * @param email 현재 로그인한 사용자 이메일
      * @param keyword 검색할 키워드 (제목 기준)
      * @param pageable 페이징 및 정렬 정보를 포함한 객체
      * @return PageResponseDto<MemoListResponseDto> 응답 DTO로 감싼 페이징 결과
      */
-    public PageResponseDto<MemoListResponseDto> getKeywordMemo(String email, String keyword, Pageable pageable) {
+    public PageResponseDto<MemoListResponseDto> getKeywordMemo(String keyword, Pageable pageable) {
+        // 현재 로그인한 사용자 이메일 확인
+        String email = SecurityUtil.getCurrentUserEmail();
+
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         Page<Memo> memoPage = memoRepository.findByUserAndTitleContainingIgnoreCaseAndIsDeletedFalseOrderByUpdatedAtDesc(user, keyword, pageable);
 
         return toPageResponse(memoPage);
+    }
+
+    /**
+     * 특정 ID의 메모를 상세 조회
+     * - 로그인한 사용자의 메모가 아닌 경우 또는 삭제된 메모일 경우 예외를 발생시킨다.
+     *
+     * @param memoId 조회할 메모의 고유 ID
+     * @return 메모의 상세 정보를 담은 MemoDetailResponseDto
+     * @throws CustomException USER_NOT_FOUND: 사용자 정보가 존재하지 않을 경우
+     * @throws CustomException MEMO_NOT_FOUND: 해당 ID의 메모가 없거나 접근 권한이 없는 경우
+     */
+    public MemoDetailResponseDto getMemoDetail(Long memoId) {
+        // 1. 현재 로그인한 사용자 이메일 확인
+        String email = SecurityUtil.getCurrentUserEmail();
+
+        // 2. 사용자 정보 조회
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        // 3. 해당 사용자의 메모인지 확인하며 조회 (삭제된 메모 제외)
+        Memo memo = memoRepository.findByIdAndUserAndIsDeletedFalse(memoId, user)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMO_NOT_FOUND));
+
+        // 4. DTO로 변환 후 반환
+        return new MemoDetailResponseDto(memo);
     }
 }

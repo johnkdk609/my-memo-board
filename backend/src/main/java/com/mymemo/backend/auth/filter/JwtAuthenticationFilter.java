@@ -59,7 +59,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 log.debug("SecurityContext에 인증 정보 등록 완료");
             } else {
-                log.warn("JWT 유효성 검사 실패");
+                log.warn("JWT 유효성 검사 실패 - 401 Unauthorized 응답 반환");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json; charset=UTF-8");
+                response.getWriter().write("{\"message\": \"토큰이 유효하지 않거나 만료되었습니다.\"}");
+                response.getWriter().flush();
+                return;
             }
         } else {
             log.debug("Authorization 헤더 없음 또는 Bearer 형식 불일치: {}", authHeader);
