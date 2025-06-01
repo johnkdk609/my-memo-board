@@ -17,9 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class MemoService {
@@ -39,10 +36,17 @@ public class MemoService {
         return new MemoCreateResponseDto(memo);
     }
 
+    /**
+     * Memo 엔티티 페이지 객체를 MemoListResponseDto로 변환하고,
+     * 커스텀 PageResponseDto로 래핑하여 반환한다.
+     *
+     * @param memoPage Memo 엔티티 페이지 객체
+     * @return 변환된 PageResponseDto<MemoListResponseDto>
+     */
     private PageResponseDto<MemoListResponseDto> toPageResponse(Page<Memo> memoPage) {
-        // 엔티티 -> DTO 매핑
+        // Memo 엔티티 MemoListResponseDto로 매핑
         Page<MemoListResponseDto> dtoPage = memoPage.map(MemoListResponseDto::from);
-        // 커스텀 Page 응답 DTO에 필요한 정보 구성
+        // 커스텀 Page 응답 객체로 변환하여 반환
         return new PageResponseDto<>(
                 dtoPage.getContent(),       // 현재 페이지의 데이터 리스트
                 dtoPage.getNumber(),        // 현재 페이지 번호

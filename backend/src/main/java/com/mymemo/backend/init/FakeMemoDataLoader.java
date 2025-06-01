@@ -33,6 +33,10 @@ public class FakeMemoDataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        boolean enableFaker = false;    // faker 실행할 필요가 있다면 true로 바꾼다.
+        if (!enableFaker) {
+            return;
+        }
         String email = "faker@example.com";
 
         User user = userRepository.findByEmail(email)
