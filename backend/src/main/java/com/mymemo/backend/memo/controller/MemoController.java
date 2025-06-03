@@ -28,6 +28,7 @@ public class MemoController {
     private final MemoService memoService;
 
     /**
+     * [POST] /api/memos
      * 메모 생성 API
      * @param requestDto 제목, 카테고리, 내용
      * @return 메모 생성 성공 메시지
@@ -97,6 +98,7 @@ public class MemoController {
     }
 
     /**
+     * [GET] /api/memos/{id}
      * 단일 메모 상세 조회 API
      *
      * 로그인한 사용자가 작성한 메모 중, 주어진 ID에 해당하는 메모의 상세 정보를 반환한다.
@@ -117,6 +119,32 @@ public class MemoController {
     @GetMapping("/{id}")
     public ResponseEntity<MemoDetailResponseDto> getMemoById(@PathVariable Long id) {
         MemoDetailResponseDto response = memoService.getMemoDetail(id);
+
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * [PUT] /api/memos/{id}
+     * 메모를 수정하는 API
+     *
+     * @param id 수정할 메모의 ID
+     * @param requestDto 수정할 제목, 내용, 카테고리, 공개 여부, 고정 여부 등의 정보
+     * @return 수정된 메모에 대한 응답 DTO
+     */
+    @Operation(summary = "메모 수정", description = "ID에 해당하는 메모를 수정합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "수정 성공"),
+            @ApiResponse(responseCode = "400", description = "요청 값 유효성 실패"),
+            @ApiResponse(responseCode = "401", description = "로그인 필요"),
+            @ApiResponse(responseCode = "404", description = "메모를 찾을 수 없음")
+    })
+    @Parameter(name = "id", description = "수정할 메모의 ID", required = true)
+    @PutMapping("/{id}")
+    public ResponseEntity<MemoUpdateResponseDto> updateMemoById(
+            @PathVariable Long id,
+            @RequestBody MemoUpdateRequestDto requestDto
+    ) {
+        MemoUpdateResponseDto response = memoService.updateMemo(id, requestDto);
 
         return ResponseEntity.ok(response);
     }

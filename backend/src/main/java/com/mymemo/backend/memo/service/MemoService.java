@@ -115,4 +115,29 @@ public class MemoService {
         // 4. DTO로 변환 후 반환
         return new MemoDetailResponseDto(memo);
     }
+
+    @Transactional
+    public MemoUpdateResponseDto updateMemo(Long memoId, MemoUpdateRequestDto requestDto) {
+        String email = SecurityUtil.getCurrentUserEmail();
+
+        // 1. 현재 로그인한 사용자 조회
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        // 2. 메모 조회 (작성자 본인의 메모인지 확인)
+        Memo memo = memoRepository.findByIdAndUser(memoId, user)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMO_NOT_FOUND));
+
+        // 3. 메모 수정
+        memo.update(
+                requestDto.getTitle(),
+                requestDto.getContent(),
+                requestDto.getMemoCategory(),
+                requestDto.getVisibility(),
+                requestDto.isPinned()
+        );
+
+        // 4. 응답 반환
+        return new MemoUpdateResponseDto(memo);
+    }
 }

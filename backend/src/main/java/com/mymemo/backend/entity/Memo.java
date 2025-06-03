@@ -101,4 +101,20 @@ public class Memo {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public void update(String title, String content, MemoCategory memoCategory, Visibility visibility, boolean isPinned) {
+        if ((title == null || title.trim().isBlank()) && (content == null || content.isBlank())) {
+            throw new CustomException(ErrorCode.EMPTY_MEMO);
+        }
+        if (title == null || title.trim().isEmpty()) {
+            this.title = "untitled";
+        } else {
+            this.title = title;
+        }
+        this.content = content;
+
+        this.memoCategory = (memoCategory == null) ? MemoCategory.ETC : MemoCategory.from(memoCategory.name());
+        this.visibility = (visibility == null) ? Visibility.PUBLIC : Visibility.from(visibility.name());
+
+        this.isPinned = isPinned;
+    }
 }
