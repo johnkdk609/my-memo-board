@@ -2,6 +2,8 @@ package com.mymemo.backend.entity.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
+import static com.mymemo.backend.entity.enums.Visibility.PUBLIC;
+
 public enum MemoCategory {
     WORK,
     HOBBY,
