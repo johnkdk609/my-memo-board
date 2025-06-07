@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -147,5 +148,28 @@ public class MemoController {
         MemoUpdateResponseDto response = memoService.updateMemo(id, requestDto);
 
         return ResponseEntity.ok(response);
+    }
+
+    /**
+     * [DELETE] /api/memos/{id}
+     * 메모를 삭제하는 API (soft delete 방식)
+     *
+     * 로그인한 사용자가 작성한 메모를 삭제한다.
+     * 실제로 DB에서 삭제되지는 않고, deleted 플래그가 true로 설정된다.
+     *
+     * @param memoId 삭제할 메모의 ID (PathVariable)
+     * @return 204 No Content
+     */
+    @Operation(summary = "메모 삭제", description = "ID에 해당하는 메모를 삭제합니다. (soft delete 방식)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "삭제 성공"),
+            @ApiResponse(responseCode = "404", description = "메모를 찾을 수 없음"),
+            @ApiResponse(responseCode = "401", description = "로그인 필요 (토큰 없음 또는 만료)")
+    })
+    @Parameter(name = "id", description = "삭제할 메모의 ID", required = true)
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteMemo(@PathVariable("id") Long memoId) {   // URL 경로에서 id 값을 추출하여 memoId 파라미터로 전달
+        memoService.deleteMemo(memoId);     // 서비스 로직 호출
+        return ResponseEntity.noContent().build();      // HTTP 상태 코드 204 No Content 반환 => 성공했지만 본문(body)은 없다는 뜻 (일반적으로 삭제 시 적절한 응답)
     }
 }

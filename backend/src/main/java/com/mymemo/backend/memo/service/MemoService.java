@@ -125,7 +125,7 @@ public class MemoService {
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         // 2. 메모 조회 (작성자 본인의 메모인지 확인)
-        Memo memo = memoRepository.findByIdAndUser(memoId, user)
+        Memo memo = memoRepository.findByIdAndUserAndIsDeletedFalse(memoId, user)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMO_NOT_FOUND));
 
         // 3. 메모 수정
@@ -139,5 +139,22 @@ public class MemoService {
 
         // 4. 응답 반환
         return new MemoUpdateResponseDto(memo);
+    }
+
+    @Transactional
+    public void deleteMemo(Long memoId) {
+        // 1. 현재 로그인한 사용자 이메일 확인
+        String email = SecurityUtil.getCurrentUserEmail();
+
+        // 2. 사용자 정보 조회
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        // 3. 삭제되지 않은 메모인지 확인하며 조회
+        Memo memo = memoRepository.findByIdAndUserAndIsDeletedFalse(memoId, user)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMO_NOT_FOUND));
+
+        // 4. soft delete 처리
+        memo.softDelete();
     }
 }
