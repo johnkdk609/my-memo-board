@@ -68,7 +68,7 @@ public class MemoService {
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         // 삭제되지 않은 메모들을 최신순으로 페이징 조회
-        Page<Memo> memoPage = memoRepository.findByUserAndIsDeletedFalseOrderByUpdatedAtDesc(user, pageable);
+        Page<Memo> memoPage = memoRepository.findByUserAndIsDeletedFalseOrderByIsPinnedDescPinOrderAscUpdatedAtDesc(user, pageable);
 
         return toPageResponse(memoPage);
     }
@@ -86,7 +86,7 @@ public class MemoService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        Page<Memo> memoPage = memoRepository.findByUserAndTitleContainingIgnoreCaseAndIsDeletedFalseOrderByUpdatedAtDesc(user, keyword, pageable);
+        Page<Memo> memoPage = memoRepository.findByUserAndTitleContainingIgnoreCaseAndIsDeletedFalseOrderByIsPinnedDescPinOrderAscUpdatedAtDesc(user, keyword, pageable);
 
         return toPageResponse(memoPage);
     }

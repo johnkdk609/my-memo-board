@@ -26,7 +26,7 @@ public interface MemoRepository extends JpaRepository<Memo, Long> {
     List<Memo> findAllByUserAndIsDeletedFalseOrderByUpdatedAtDesc(User user);
 
     // 해당 사용자의 메모를 페이징 처리하여 최신순으로 조회 (삭제되지 않은 메모만 포함)
-    Page<Memo> findByUserAndIsDeletedFalseOrderByUpdatedAtDesc(User user, Pageable pageable);
+    Page<Memo> findByUserAndIsDeletedFalseOrderByIsPinnedDescPinOrderAscUpdatedAtDesc(User user, Pageable pageable);
 
     // 해당 사용자가 작성한 전체 메모 개수를 반환 (삭제 여부와 무관)
     long countByUser(User user);
@@ -38,7 +38,7 @@ public interface MemoRepository extends JpaRepository<Memo, Long> {
      * @param pageable 페이징 및 정렬 정보
      * @return 키워드가 포함된 메모 페이지 객체
      */
-    Page<Memo> findByUserAndTitleContainingIgnoreCaseAndIsDeletedFalseOrderByUpdatedAtDesc(User user, String keyword, Pageable pageable);
+    Page<Memo> findByUserAndTitleContainingIgnoreCaseAndIsDeletedFalseOrderByIsPinnedDescPinOrderAscUpdatedAtDesc(User user, String keyword, Pageable pageable);
 
     Optional<Memo> findByIdAndUserAndIsDeletedFalse(Long id, User user);
 }
