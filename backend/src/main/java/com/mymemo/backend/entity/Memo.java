@@ -104,12 +104,18 @@ public class Memo {
         this.pinOrder = pinOrder;
     }
 
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
+    // update 를 아래에서 조건부로 처리하고 있기 때문에 주석 처리
+//    @PreUpdate
+//    protected void onUpdate() {
+//        this.updatedAt = LocalDateTime.now();
+//    }
 
     public void update(String title, String content, MemoCategory memoCategory, Visibility visibility, boolean isPinned) {
+        boolean titleChanged = (title != null && !title.equals(this.title));
+        boolean contentChanged = (content != null && !content.equals(this.content));
+        boolean categoryChanged = memoCategory != null && !memoCategory.equals(this.memoCategory);
+        boolean visibilityChanged = visibility != null && !visibility.equals(this.visibility);
+
         if ((title == null || title.trim().isBlank()) && (content == null || content.isBlank())) {
             throw new CustomException(ErrorCode.EMPTY_MEMO);
         }
@@ -124,5 +130,10 @@ public class Memo {
         this.visibility = (visibility == null) ? Visibility.PUBLIC : Visibility.from(visibility.name());
 
         this.isPinned = isPinned;
+
+        // 제목, 내용, 카테고리, 공개여부 중 하나라도 바뀌었으면 updatedAt 갱신 - pinned 여부만 바꿨으면 수정 시각은 변하지 않게 했다. UX 고려.
+        if (titleChanged || contentChanged || categoryChanged || visibilityChanged) {
+            this.updatedAt = LocalDateTime.now();
+        }
     }
 }
