@@ -5,6 +5,8 @@ import com.mymemo.backend.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -41,4 +43,7 @@ public interface MemoRepository extends JpaRepository<Memo, Long> {
     Page<Memo> findByUserAndTitleContainingIgnoreCaseAndIsDeletedFalseOrderByIsPinnedDescPinOrderAscUpdatedAtDesc(User user, String keyword, Pageable pageable);
 
     Optional<Memo> findByIdAndUserAndIsDeletedFalse(Long id, User user);
+
+    @Query("SELECT COALESCE(MIN(m.pinOrder), 0) FROM Memo AS m WHERE m.user = :user AND m.isPinned = true AND m.isDeleted = false")
+    int findMinPinOrderByUser(@Param("user") User user);
 }
