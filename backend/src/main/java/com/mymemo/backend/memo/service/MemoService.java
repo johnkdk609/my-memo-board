@@ -145,7 +145,7 @@ public class MemoService {
         if (!wasPinned && nowPinned) {
             // 새로 고정되었을 경우 -> 최대 pinOrder + 1 부여
             int minPinOrder = memoRepository.findMinPinOrderByUser(user);
-            int newPinOrder = (minPinOrder <= 1) ? minPinOrder - 1 : 0;     // pinOrder가 1 이상이라면 줄이고, 0일 경우 음수로
+            int newPinOrder = (minPinOrder <= Integer.MIN_VALUE + 1) ? Integer.MIN_VALUE : minPinOrder - 1;     // 극단적인 케이스 처리
             memo.updatePinOrder(newPinOrder);
         } else if (wasPinned && !nowPinned) {
             // 고정 해제될 경우 -> pinOrder 초기화
