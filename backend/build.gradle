@@ -51,6 +51,8 @@ dependencies {
     }
     implementation 'org.yaml:snakeyaml:2.2'  // 내가 직접 안정적으로 명시
 
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
 }
 
 tasks.named('test') {
