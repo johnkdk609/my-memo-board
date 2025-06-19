@@ -70,4 +70,27 @@ public class JwtUtil {
             return false;
         }
     }
+
+    @Value("${jwt.refresh-token-validity-in-ms}")
+    private long refreshTokenValidityInMs;      // Refresh Token의 유효 기간 (application.yml에서 주입)
+
+    // Refresh Token 생성 메서드
+    public String createRefreshToken(String email) {
+        Date now = new Date();      // 현재 시각
+        Date expiry = new Date(now.getTime() + refreshTokenValidityInMs);       // 만료 시각 계산
+
+        // JWT 빌더를 사용해 Refresh Token 생성
+        return Jwts.builder()
+                .setHeaderParam("typ", "JWT")       // 토큰 타입 명시
+                .setSubject(email)                             // 사용자 식별 정보 (이메일)
+                .setIssuedAt(now)                              // 토큰 발급 시간
+                .setExpiration(expiry)                         // 토큰 만료 시간 (14일)
+                .signWith(key, SignatureAlgorithm.HS256)       // HMAC-SHA256 알고리즘과 비밀 키로 서명
+                .compact();                                    // JWT 문자열로 압축 반환
+    }
+
+    // Redis에 저장한 TTL(만료 시간)을 위해 외부에서 접근 가능하게 제공
+    public long getRefreshTokenValidityInMs() {
+        return refreshTokenValidityInMs;    // application.yml에서 설정한 값 그대로 반환
+    }
 }
