@@ -19,7 +19,10 @@ public enum ErrorCode {
     EMPTY_MEMO("아무 것도 작성하지 않으셨습니다.", HttpStatus.BAD_REQUEST),
     USER_NOT_FOUND("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     MEMO_NOT_FOUND("해당 메모를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
-    ILLEGAL_ARGUMENT("잘못된 요청입니다.", HttpStatus.BAD_REQUEST)
+    ILLEGAL_ARGUMENT("잘못된 요청입니다.", HttpStatus.BAD_REQUEST),
+    REFRESH_TOKEN_NOT_FOUND("저장된 Refresh Token이 없습니다.", HttpStatus.UNAUTHORIZED),
+    REFRESH_TOKEN_MISMATCH("요청한 Refresh Token이 저장된 토큰과 일치하지 않습니다.", HttpStatus.UNAUTHORIZED),
+    INVALID_REFRESH_TOKEN("Refresh Token이 유효하지 않습니다.", HttpStatus.UNAUTHORIZED)
     // 필요한 항목 계속 추가 가능
     ;
 
