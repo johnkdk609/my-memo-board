@@ -1,8 +1,6 @@
 package com.mymemo.backend.auth.controller;
 
-import com.mymemo.backend.auth.dto.LoginRequestDto;
-import com.mymemo.backend.auth.dto.LoginResponseDto;
-import com.mymemo.backend.auth.dto.SignupRequestDto;
+import com.mymemo.backend.auth.dto.*;
 import com.mymemo.backend.auth.service.AuthService;
 import com.mymemo.backend.auth.util.JwtUtil;
 import com.mymemo.backend.entity.User;
@@ -92,5 +90,21 @@ public class AuthController {
 
         // accessToken 담아 응답
         return ResponseEntity.ok(new LoginResponseDto(accessToken));
+    }
+
+    /**
+     * Access Token 재발급 API
+     * @param requestDto 사용자 이메일과 Refresh Token
+     * @return 새로운 Access Token 및 Refresh Token
+     */
+    @Operation(summary = "토큰 재발급", description = "Refresh Token을 검증해 새로운 Access Token과 Refresh Token을 발급합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "토큰 재발급 성공"),
+            @ApiResponse(responseCode = "401", description = "Refresh Token 유효성 실패"),
+            @ApiResponse(responseCode = "404", description = "사용자 정보 없음")
+    })
+    @PostMapping("/reissue")
+    public TokenResponseDto reissue(@RequestBody TokenReissueRequestDto requestDto) {
+        return authService.reissue(requestDto);
     }
 }
