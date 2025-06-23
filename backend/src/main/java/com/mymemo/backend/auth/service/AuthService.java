@@ -1,5 +1,6 @@
 package com.mymemo.backend.auth.service;
 
+import com.mymemo.backend.auth.dto.LoginRequestDto;
 import com.mymemo.backend.auth.dto.SignupRequestDto;
 import com.mymemo.backend.auth.dto.TokenReissueRequestDto;
 import com.mymemo.backend.auth.dto.TokenResponseDto;
@@ -87,5 +88,38 @@ public class AuthService {
 
         // 7. 새로운 토큰 쌍을 응답으로 반환
         return new TokenResponseDto(newAccessToken, newRefreshToken);
+    }
+
+    public TokenResponseDto login(LoginRequestDto dto, String activeProfile) {
+        User user;
+
+        if ("dev".equals(activeProfile)) {      // dev 환경에서는 상세한 에러 메시지 제공
+            user = userRepository.findByEmail(dto.getEmail())   // 이메일로 사용자 조회 (없으면 EMAIL_NOT_FOUND 에러)
+                    .orElseThrow(() -> new CustomException(ErrorCode.EMAIL_NOT_FOUND));
+
+            if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {      // 비밀번호 검증 (틀리면 PASSWORD_MISMATCH 에러)
+                throw new CustomException(ErrorCode.PASSWORD_MISMATCH);
+            }
+        } else {
+            user = userRepository.findByEmail(dto.getEmail()).orElse(null);     // prod 환경에서는 통합된 에러 메시지 제공 (보안 이유)
+
+            if (user == null || !passwordEncoder.matches(dto.getPassword(), user.getPassword())) {      // 이메일 없거나 비밀번호 틀리면 INVALID_CREDENTIALS 에러
+                throw new CustomException(ErrorCode.INVALID_CREDENTIALS);
+            }
+        }
+
+        String accessToken = jwtUtil.createAccessToken(user.getEmail());    // 인증 성공 시 Access Token 생성
+        String refreshToken = jwtUtil.createRefreshToken(user.getEmail());  // Refresh Token 생성
+
+        // Refresh Token을 Redis에 저장 (키: RT:이메일, TTL: 14일)
+        redisTemplate.opsForValue().set(
+                "RT:" + user.getEmail(),            // Redis 키
+                refreshToken,                           // 저장할 값
+                jwtUtil.getRefreshTokenValidityInMs(),  // 만료 시간(ms)
+                TimeUnit.MILLISECONDS                   // 시간 단위
+        );
+
+        // Access Token + Refresh Token 응답 객체로 반환
+        return new TokenResponseDto(accessToken, refreshToken);
     }
 }
