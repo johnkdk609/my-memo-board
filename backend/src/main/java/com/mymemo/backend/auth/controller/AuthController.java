@@ -56,40 +56,16 @@ public class AuthController {
     /**
      * 로그인 API
      * @param request 이메일, 비밀번호
-     * @return JWT accessToken 응답
+     * @return JWT accessToken + RefreshToken 응답
      */
-    @Operation(summary = "로그인", description = "이메일과 비밀번호를 통해 로그인하고, AccessToken을 발급받습니다.")
+    @Operation(summary = "로그인", description = "이메일과 비밀번호를 통해 로그인하고, AccessToken과 RefreshToken을 발급받습니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "로그인 성공"),
             @ApiResponse(responseCode = "400", description = "입력값 오류 또는 이메일/비밀번호 불일치")
     })
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto request) {
-        User user;
-
-        if ("dev".equals(activeProfile)) {
-            // 1. 이메일 존재 확인 -> 없으면 바로 예외
-            user = userRepository.findByEmail(request.getEmail())
-                    .orElseThrow(() -> new CustomException(ErrorCode.EMAIL_NOT_FOUND));
-
-            // 2. 비밀번호 불일치 -> 예외
-            if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-                throw new CustomException(ErrorCode.PASSWORD_MISMATCH);
-            }
-        } else {
-            // prod 환경: 통합 메시지용 처리
-            user = userRepository.findByEmail(request.getEmail()).orElse(null);
-
-            if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-                throw new CustomException(ErrorCode.INVALID_CREDENTIALS);
-            }
-        }
-
-        // 인증 성공 시 JWT 발급
-        String accessToken = jwtUtil.createAccessToken(user.getEmail());
-
-        // accessToken 담아 응답
-        return ResponseEntity.ok(new LoginResponseDto(accessToken));
+    public ResponseEntity<TokenResponseDto> login(@RequestBody LoginRequestDto request) {
+        return ResponseEntity.ok(authService.login(request, activeProfile));
     }
 
     /**
