@@ -122,4 +122,14 @@ public class AuthService {
         // Access Token + Refresh Token 응답 객체로 반환
         return new TokenResponseDto(accessToken, refreshToken);
     }
+
+    public void logout(String email) {
+        // Redis에서 Refresh Token 제거
+        Boolean result = redisTemplate.delete("RT:" + email);
+
+        if (result == null || !result) {
+            // Redis에 해당 키가 없거나 삭제 실패
+            throw new CustomException(ErrorCode.REFRESH_TOKEN_NOT_FOUND);
+        }
+    }
 }

@@ -83,4 +83,20 @@ public class AuthController {
     public TokenResponseDto reissue(@RequestBody TokenReissueRequestDto requestDto) {
         return authService.reissue(requestDto);
     }
+
+    /**
+     * 로그아웃 API
+     * @param requestDto 사용자 이메일
+     * @return 로그아웃 성공 메시지
+     */
+    @Operation(summary = "로그아웃", description = "Redis에 저장된 Refresh Token을 삭제하여 로그아웃 처리합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "로그아웃 성공"),
+            @ApiResponse(responseCode = "404", description = "저장된 Refresh Token 없음")
+    })
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@RequestBody TokenLogoutRequestDto requestDto) {
+        authService.logout(requestDto.getEmail());
+        return ResponseEntity.ok("로그아웃 성공");
+    }
 }
