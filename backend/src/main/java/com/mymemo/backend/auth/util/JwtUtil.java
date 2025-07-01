@@ -93,4 +93,19 @@ public class JwtUtil {
     public long getRefreshTokenValidityInMs() {
         return refreshTokenValidityInMs;    // application.yml에서 설정한 값 그대로 반환
     }
+
+    // Access Token 남은 유효시간 반환 메서드
+    public long getTokenRemainingTime(String token) {
+        // 1. JWT 파서 객체를 생성하고 서명 키를 설정함
+        //    -> 이 키를 이용해 토큰의 서명 유효성을 검증하면서 파싱 수행
+        Date expiration = Jwts.parserBuilder()
+                .setSigningKey(key)                    // JWT 검증을 위한 서명 키 설정
+                .build()
+                .parseClaimsJws(token)                 // 토큰 파싱 및 서명 검증 (Claims 추출)
+                .getBody()
+                .getExpiration();                      // Claims에서 만료 시간(Date) 추출
+
+        // 2. 만료 시각과 현재 시간의 차이를 계산 -> 남은 시간 (ms)
+        return expiration.getTime() - System.currentTimeMillis();
+    }
 }

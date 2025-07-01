@@ -8,6 +8,7 @@ import com.mymemo.backend.auth.util.JwtUtil;
 import com.mymemo.backend.entity.User;
 import com.mymemo.backend.global.exception.CustomException;
 import com.mymemo.backend.global.exception.ErrorCode;
+import com.mymemo.backend.global.util.SecurityUtil;
 import com.mymemo.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -124,7 +125,17 @@ public class AuthService {
     }
 
     public void logout(String email) {
-        // Redis에서 Refresh Token 제거
+        // 1. Access Token 추출
+        String accessToken = SecurityUtil.getCurrentToken();
+
+        // 2. Access Token 남은 유효시간 계산
+        long expiration = jwtUtil.getTokenRemainingTime(accessToken);
+
+        // 3. Access Token 블랙리스트 등록
+        redisTemplate.opsForValue()
+                .set("BL:" + accessToken, "logout", expiration, TimeUnit.MILLISECONDS);
+
+        // 4. Redis에서 Refresh Token 제거
         Boolean result = redisTemplate.delete("RT:" + email);
 
         if (result == null || !result) {
