@@ -1,11 +1,13 @@
 package com.mymemo.backend.auth.filter;
 
 import com.mymemo.backend.auth.util.JwtUtil;
+import com.mymemo.backend.global.exception.ErrorCode;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,10 +22,12 @@ import java.util.Collections;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final StringRedisTemplate redisTemplate;    // Redis 주입 필요
 
     // 생성자를 통해 JwtUtil 주입
-    public JwtAuthenticationFilter(JwtUtil jwtUtil) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, StringRedisTemplate redisTemplate) {
         this.jwtUtil = jwtUtil;
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
@@ -40,6 +44,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);     // "Bearer " 이후 토큰만 추출
             if (jwtUtil.isTokenValid(token)) {      // 토큰 유효성 검사
+
+                // 블랙리스트 확인
+                if (redisTemplate.hasKey("BL:" + token)) {
+                    log.warn("로그아웃된 토큰으로 요청 시도 - 블랙리스트 차단");
+
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json; charset=UTF-8");
+                    response.getWriter().write("{\"message\": \"" + ErrorCode.TOKEN_BLACKLISTED.getMessage() + "\"}");
+                    response.getWriter().flush();
+                    return;
+                }
+
                 String email = jwtUtil.getEmailFromToken(token);    // 이메일(subject) 추출
 
                 log.info("유효한 JWT, 사용자 이메일: {}", email);
