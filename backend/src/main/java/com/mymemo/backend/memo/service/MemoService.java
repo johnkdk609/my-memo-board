@@ -2,6 +2,7 @@ package com.mymemo.backend.memo.service;
 
 import com.mymemo.backend.entity.Memo;
 import com.mymemo.backend.entity.User;
+import com.mymemo.backend.entity.enums.Visibility;
 import com.mymemo.backend.global.exception.CustomException;
 import com.mymemo.backend.global.exception.ErrorCode;
 import com.mymemo.backend.global.util.SecurityUtil;
@@ -93,26 +94,33 @@ public class MemoService {
 
     /**
      * 특정 ID의 메모를 상세 조회
-     * - 로그인한 사용자의 메모가 아닌 경우 또는 삭제된 메모일 경우 예외를 발생시킨다.
+     *
+     * - 로그인한 사용자의 메모인 경우: 무조건 조회 가능
+     * - 비회원 또는 타인의 메모인 경우: PUBLIC 메모만 조회 가능
+     * - 삭제된 메모이거나 접근 권한이 없을 경우 예외 발생
      *
      * @param memoId 조회할 메모의 고유 ID
      * @return 메모의 상세 정보를 담은 MemoDetailResponseDto
-     * @throws CustomException USER_NOT_FOUND: 사용자 정보가 존재하지 않을 경우
-     * @throws CustomException MEMO_NOT_FOUND: 해당 ID의 메모가 없거나 접근 권한이 없는 경우
+     * @throws CustomException MEMO_NOT_FOUND: 메모가 존재하지 않거나 삭제된 경우
+     * @throws CustomException MEMO_PRIVATE_ACCESS_DENIED: 비공개 메모에 대한 접근 시도
      */
     public MemoDetailResponseDto getMemoDetail(Long memoId) {
-        // 1. 현재 로그인한 사용자 이메일 확인
-        String email = SecurityUtil.getCurrentUserEmail();
-
-        // 2. 사용자 정보 조회
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-
-        // 3. 해당 사용자의 메모인지 확인하며 조회 (삭제된 메모 제외)
-        Memo memo = memoRepository.findByIdAndUserAndIsDeletedFalse(memoId, user)
+        // 메모 존재 여부 및 삭제 여부 확인
+        Memo memo = memoRepository.findByIdAndIsDeletedFalse(memoId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMO_NOT_FOUND));
 
-        // 4. DTO로 변환 후 반환
+        String currentUserEmail = SecurityUtil.getCurrentUserEmail();   // 로그인 여부
+
+        // 소유자인 경우 -> 바로 반환
+        if (currentUserEmail != null && memo.getUser().getEmail().equals(currentUserEmail)) {
+            return new MemoDetailResponseDto(memo);
+        }
+
+        // 비회원 또는 타인의 경우 -> PUBLIC 메모만 조회 가능
+        if (memo.getVisibility() != Visibility.PUBLIC) {
+            throw new CustomException(ErrorCode.MEMO_PRIVATE_ACCESS_DENIED);
+        }
+
         return new MemoDetailResponseDto(memo);
     }
 

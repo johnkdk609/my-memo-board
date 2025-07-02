@@ -23,7 +23,8 @@ public enum ErrorCode {
     REFRESH_TOKEN_NOT_FOUND("저장된 Refresh Token이 없습니다.", HttpStatus.UNAUTHORIZED),
     REFRESH_TOKEN_MISMATCH("요청한 Refresh Token이 저장된 토큰과 일치하지 않습니다.", HttpStatus.UNAUTHORIZED),
     INVALID_REFRESH_TOKEN("Refresh Token이 유효하지 않습니다.", HttpStatus.UNAUTHORIZED),
-    TOKEN_BLACKLISTED("로그아웃된 토큰입니다.", HttpStatus.UNAUTHORIZED)
+    TOKEN_BLACKLISTED("로그아웃된 토큰입니다.", HttpStatus.UNAUTHORIZED),
+    MEMO_PRIVATE_ACCESS_DENIED("비공개 메모는 소유자만 조회할 수 있습니다.", HttpStatus.FORBIDDEN)
     // 필요한 항목 계속 추가 가능
     ;
 

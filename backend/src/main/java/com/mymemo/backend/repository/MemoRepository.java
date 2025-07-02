@@ -46,4 +46,6 @@ public interface MemoRepository extends JpaRepository<Memo, Long> {
 
     @Query("SELECT COALESCE(MIN(m.pinOrder), 0) FROM Memo AS m WHERE m.user = :user AND m.isPinned = true AND m.isDeleted = false")
     int findMinPinOrderByUser(@Param("user") User user);
+
+    Optional<Memo> findByIdAndIsDeletedFalse(Long id);
 }
