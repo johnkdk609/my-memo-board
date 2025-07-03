@@ -21,7 +21,7 @@ public class MemoCreateRequestDto {
             example = "ETC")
     private MemoCategory memoCategory;
 
-    @Schema(description = "공개 여부", defaultValue = "PRIVATE", hidden = true)
+    @Schema(description = "공개 여부", defaultValue = "PRIVATE", example = "PRIVATE")
     private Visibility visibility = Visibility.PRIVATE;
 
     @Schema(description = "상단 고정 여부", defaultValue = "false", example = "false", hidden = true)    // Swagger 예시가 isPinned 대신 pinned 로 출력되도록 매핑 처리
