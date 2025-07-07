@@ -48,4 +48,6 @@ public interface MemoRepository extends JpaRepository<Memo, Long> {
     int findMinPinOrderByUser(@Param("user") User user);
 
     Optional<Memo> findByIdAndIsDeletedFalse(Long id);
+
+    Optional<Memo> findByUuidAndIsDeletedFalse(String uuid);
 }

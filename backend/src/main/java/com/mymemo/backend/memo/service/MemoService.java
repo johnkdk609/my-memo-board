@@ -60,6 +60,7 @@ public class MemoService {
      * @param pageable 페이징 및 정렬 정보를 포함한 객체
      * @return PageResponseDto<MemoListResponseDto> 응답 DTO로 감싼 페이징 결과
      */
+    @Transactional(readOnly = true)
     public PageResponseDto<MemoListResponseDto> getMemos(Pageable pageable) {
         // 현재 로그인한 사용자 이메일 확인
         String email = SecurityUtil.getCurrentUserEmail();
@@ -80,6 +81,7 @@ public class MemoService {
      * @param pageable 페이징 및 정렬 정보를 포함한 객체
      * @return PageResponseDto<MemoListResponseDto> 응답 DTO로 감싼 페이징 결과
      */
+    @Transactional(readOnly = true)
     public PageResponseDto<MemoListResponseDto> getKeywordMemo(String keyword, Pageable pageable) {
         // 현재 로그인한 사용자 이메일 확인
         String email = SecurityUtil.getCurrentUserEmail();
@@ -104,6 +106,7 @@ public class MemoService {
      * @throws CustomException MEMO_NOT_FOUND: 메모가 존재하지 않거나 삭제된 경우
      * @throws CustomException MEMO_PRIVATE_ACCESS_DENIED: 비공개 메모에 대한 접근 시도
      */
+    @Transactional(readOnly = true)
     public MemoDetailResponseDto getMemoDetail(Long memoId) {
         // 메모 존재 여부 및 삭제 여부 확인
         Memo memo = memoRepository.findByIdAndIsDeletedFalse(memoId)
@@ -179,5 +182,20 @@ public class MemoService {
 
         // 4. soft delete 처리
         memo.softDelete();
+    }
+
+    // 읽기 전용 트랜잭션은 flush가 발생하지 않고, 엔티티 변경 감지를 하지 않아 성능상 유리하다.
+    // 이는 데이터 변경이 없는 메서드에만 사용하는 것이 바람직하다.
+    // 읽기 전용 트랜잭션은 스냅샷 저장, 더티체킹 등을 생략하기 때문에 약간 더 가볍고 빠르다. 그리고 데이터 변경을 하지 않는다는 점 명시.
+    @Transactional(readOnly = true)
+    public MemoDetailResponseDto getMemoDetailByUuid(String uuid) {
+        Memo memo = memoRepository.findByUuidAndIsDeletedFalse(uuid)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMO_NOT_FOUND));
+
+        if (memo.getVisibility() != Visibility.PUBLIC) {
+            throw new CustomException(ErrorCode.MEMO_PRIVATE_ACCESS_DENIED);
+        }
+
+        return new MemoDetailResponseDto(memo);
     }
 }

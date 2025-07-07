@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @Entity
@@ -52,6 +53,9 @@ public class Memo {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    @Column(unique = true, nullable = false, updatable = false)
+    private String uuid;
+
     protected Memo() {}     // protected를 하여 불필요한 객체 생성 가능성 방지
 
     @PrePersist
@@ -70,7 +74,7 @@ public class Memo {
 
     // 기존 생성자에 누락된 필드들 추가
     // -> visibility, isPinned, isDeleted, pinOrder 를 인자로 받아 초기화
-    public Memo(User user, String title, String content, MemoCategory memoCategory, Visibility visibility, boolean isPinned, boolean isDeleted, int pinOrder) {
+    public Memo(User user, String title, String content, MemoCategory memoCategory, Visibility visibility, boolean isPinned, boolean isDeleted, int pinOrder, String uuid) {
         if (user == null) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_ACCESS);
         }
@@ -102,6 +106,7 @@ public class Memo {
         this.isPinned = isPinned;
         this.isDeleted = isDeleted;
         this.pinOrder = pinOrder;
+        this.uuid = UUID.randomUUID().toString();
     }
 
     // update 를 아래에서 조건부로 처리하고 있기 때문에 주석 처리

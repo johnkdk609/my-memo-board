@@ -1,5 +1,9 @@
 package com.mymemo.backend.memo.controller;
 
+import com.mymemo.backend.entity.Memo;
+import com.mymemo.backend.entity.enums.Visibility;
+import com.mymemo.backend.global.exception.CustomException;
+import com.mymemo.backend.global.exception.ErrorCode;
 import com.mymemo.backend.global.util.SecurityUtil;
 import com.mymemo.backend.memo.dto.*;
 import com.mymemo.backend.memo.service.MemoService;
@@ -171,5 +175,27 @@ public class MemoController {
     public ResponseEntity<Void> deleteMemo(@PathVariable("id") Long memoId) {   // URL 경로에서 id 값을 추출하여 memoId 파라미터로 전달
         memoService.deleteMemo(memoId);     // 서비스 로직 호출
         return ResponseEntity.noContent().build();      // HTTP 상태 코드 204 No Content 반환 => 성공했지만 본문(body)은 없다는 뜻 (일반적으로 삭제 시 적절한 응답)
+    }
+
+    /**
+     * [GET] /api/memos/public/{uuid}
+     * UUID 기반으로 공개 메모 조회 (비회원 가능)
+     * <p>
+     * 공개 상태인 메모만 조회 가능하며, 비공개 메모일 경우 접근이 거부된다.
+     *
+     * @param uuid 조회할 메모의 UUID
+     * @return MemoDetailResponseDto 메모의 상세 정보
+     */
+    @Operation(summary = "UUID 기반 공개 메모 조회", description = "공개 상태인 메모를 UUID로 조회합니다. 비회원도 접근 가능합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "403", description = "비공개 메모 접근 시도"),
+            @ApiResponse(responseCode = "404", description = "메모를 찾을 수 없음")
+    })
+    @Parameter(name = "uuid", description = "조회할 메모의 UUID", required = true)
+    @GetMapping("/public/{uuid}")
+    public ResponseEntity<MemoDetailResponseDto> getMemoByUuid(@PathVariable String uuid) {
+        MemoDetailResponseDto response = memoService.getMemoDetailByUuid(uuid);
+        return ResponseEntity.ok(response);
     }
 }
