@@ -7,6 +7,8 @@ import com.mymemo.backend.entity.enums.MemoCategory;
 import com.mymemo.backend.entity.enums.Visibility;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.util.UUID;
+
 public class MemoCreateRequestDto {
 
     @Schema(description = "메모 제목")
@@ -73,6 +75,6 @@ public class MemoCreateRequestDto {
     public Memo toEntity(User user) {
         Visibility resolvedVisibility = (this.visibility != null) ? this.visibility : Visibility.PRIVATE;
 
-        return new Memo(user, title, content, memoCategory, resolvedVisibility, isPinned, false, 0);
+        return new Memo(user, title, content, memoCategory, resolvedVisibility, isPinned, false, 0, UUID.randomUUID().toString());
     }
 }

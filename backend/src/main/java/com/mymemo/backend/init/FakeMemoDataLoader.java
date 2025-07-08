@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Locale;
 import java.util.Random;
+import java.util.UUID;
 
 @Slf4j
 @Component
@@ -57,7 +58,7 @@ public class FakeMemoDataLoader implements CommandLineRunner {
             boolean isPinned = random.nextBoolean();
             Visibility visibility = random.nextBoolean() ? Visibility.PUBLIC : Visibility.PRIVATE;
 
-            Memo memo = new Memo(user, title, content, category, visibility, isPinned, false, 0);
+            Memo memo = new Memo(user, title, content, category, visibility, isPinned, false, 0, UUID.randomUUID().toString());
             memoRepository.save(memo);
 
             if (i % 1000 == 0) {

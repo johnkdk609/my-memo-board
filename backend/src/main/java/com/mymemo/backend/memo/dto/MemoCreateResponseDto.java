@@ -2,6 +2,7 @@ package com.mymemo.backend.memo.dto;
 
 import com.mymemo.backend.entity.Memo;
 import com.mymemo.backend.entity.enums.MemoCategory;
+import com.mymemo.backend.entity.enums.Visibility;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -13,6 +14,8 @@ public class MemoCreateResponseDto {
     private String title;
     private String content;
     private MemoCategory memoCategory;
+    private Visibility visibility;
+    private String uuid;
     private LocalDateTime createdAt;
 
     public MemoCreateResponseDto(Memo memo) {
@@ -20,6 +23,8 @@ public class MemoCreateResponseDto {
         this.title = memo.getTitle();
         this.content = memo.getContent();
         this.memoCategory = memo.getMemoCategory();
+        this.visibility = memo.getVisibility();
+        this.uuid = memo.getUuid();
         this.createdAt = memo.getCreatedAt();
     }
 }
