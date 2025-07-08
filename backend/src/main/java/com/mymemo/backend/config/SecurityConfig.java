@@ -45,6 +45,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/auth/**",     // 로그인, 회원가입 등은 인증 없이 허용
+                                "/api/memos/public/**",     // 비회원도 접근 가능하도록 허용
                                 "/v3/api-docs/**",  // Swagger
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
@@ -65,7 +66,10 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(
+                                "/api/auth/**",
+                                "/api/memos/public/**"      // 공개 메모 조회 허용
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form.disable())

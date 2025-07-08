@@ -16,6 +16,7 @@ public class MemoListResponseDto {
     private MemoCategory memoCategory;
     private Visibility visibility;
     private boolean isPinned;
+    private String uuid;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String preview;     // 메모 전체 조회할 때 100자까지만 미리보기
@@ -27,6 +28,7 @@ public class MemoListResponseDto {
         this.memoCategory = memo.getMemoCategory();
         this.visibility = memo.getVisibility();
         this.isPinned = memo.isPinned();
+        this.uuid = memo.getUuid();
         this.createdAt = memo.getCreatedAt();
         this.updatedAt = memo.getUpdatedAt();
         this.preview = generatePreview(content);
